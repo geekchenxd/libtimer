@@ -88,7 +88,9 @@ struct timer {
 };
 
 
+long tv_to_msec(const struct timeval *tv);
 int add_timer(struct timer *t);
+int del_timer(struct timer *t);
 struct timer_base *timer_base_create(void);
 int timer_base_init(struct timer_base *base);
 void timer_base_destroy(struct timer_base *base);

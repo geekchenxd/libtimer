@@ -12,7 +12,7 @@ void timer1_cb(void *arg)
 	gettimeofday(&now, NULL);
 	_timersub(&now, &t->last_time, &diff);
 	time_t timeout = tv_to_msec(&diff);
-	printf("call time is %u\n", timeout);
+	printf("call time is %lu\n", timeout);
 
 	t->ev_timeout.tv_sec = 1;
 	add_timer(t);
