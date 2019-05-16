@@ -7,28 +7,27 @@
 #include <time.h>
 #include "timer.h"
 
-#define EVENT 2
+#define EVENT 1000
 
 static int called = 0;
 static unsigned seed = 0;
 
 void timeout_cb(void *arg)
 {
-	//struct timeval now;
+	struct timeval now;
+	struct timeval diff;
 	struct timer *t = (struct timer*)arg;
 	if (!t) return;
 
 	called++;
-	printf("called is %d\n", called);
-	del_timer(t);
 
-#if 0
+#if 1
 	gettimeofday(&now, NULL);
 	_timersub(&now, &t->last_time, &diff);
 	time_t timeout = tv_to_msec(&diff);
 	printf("call time is %lu\n", timeout);
 
-	t->ev_timeout.tv_sec = 1;
+	//t->ev_timeout.tv_sec = 1;
 	//add_timer(t);
 #endif
 }
@@ -66,9 +65,9 @@ int main(int argc, char *argv[])
 
 	seed = seed_get();
 
-	cb = (struct callback *)malloc(sizeof *cb);
-	memset(cb, 0x0, sizeof *cb);
-	cb->cb = timeout_cb;
+	//cb = (struct callback *)malloc(sizeof *cb);
+	//memset(cb, 0x0, sizeof *cb);
+	//cb->cb = timeout_cb;
 
 	for (i = 0; i < EVENT; i++) {
 		timer = (struct timer *)malloc(sizeof *timer);
@@ -79,11 +78,12 @@ int main(int argc, char *argv[])
 		timer->flags = 0;
 		timer->min_heap_idx = -1;
 		timer->tm_base = base;
-		timer->cb = cb;
+		timer->cb = (struct callback *)malloc(sizeof *cb);
+		memset(timer->cb, 0x0, sizeof *cb);
+		timer->cb->cb = timeout_cb;
 		timer->cb->data = timer;
 		timer->ev_timeout.tv_sec = 0;
-		timer->ev_timeout.tv_usec = rand_int(seed, 50000);
-		printf("timer timeout is %ld\n", timer->ev_timeout.tv_usec);
+		timer->ev_timeout.tv_usec = 500 * 1000;//rand_int(seed, 50000);
 
 		if (add_timer(timer)) {
 			printf("add timer failed!\n");
